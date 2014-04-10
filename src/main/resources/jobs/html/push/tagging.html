@@ -1,0 +1,40 @@
+<div class="container" ng-controller="PushController">
+    <div class="page-header">
+        <h1>Push - Tags</h1>
+    </div>
+    <div ng-show="error" class="alert alert-danger">{{errorMessage}}</div>
+    <div class="row">
+        <div class="col-md-12 column">
+            <p>
+                Many Devices can be tagged here. To tag the devices a JQL query must be given which results in a list of
+                devices.
+            </p>
+            <p>
+                <code>SELECT d.pushToken FROM Device d WHERE d.pushToken IS NOT NULL AND d.user.locked=false;</code>
+            </p>
+        </div>
+        <div class="col-md-12 column">
+            <form id="form" method="post" action="executeTagDevices" role="form">
+                <div class="form-group">
+                    <label for="query">Query</label>
+                    <textarea class="form-control" id="query" placeholder="Enter query"/>
+                </div>
+                <button type="submit" class="btn btn-default">Test</button>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4 column">
+            <p>Existing Tags:</p>
+            <div style="max-height: 100px;overflow-y:scroll;">
+                <table>
+                    <tr ng-repeat="tag in tags">
+                        <td>{{tag}}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-12 column"/>
+    </div>
+
+</div>
