@@ -3,11 +3,25 @@
 <head>
     <meta charset="utf-8">
     <title>TVSmiles Jobs</title>
-    <link rel="stylesheet" href="css/app.css"/>
     <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css" />
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.0/jquery.js"></script>
+    <link rel="stylesheet" href="css/app.css"/>
+    <script src="js/lib/angular/angular.js"></script>
+    <script src="js/lib/angular/angular-route.js"></script>
+    <script src="js/lib/angular/angular-cookies.js"></script>
+    <script src="js/lib/ui-bootstrap-tpls-0.9.0.min.js"></script>
+    <script src="js/lib/http-auth-interceptor.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/services.js"></script>
+    <script src="js/filters.js"></script>
+    <script src="js/directives.js"></script>
+    <script src="js/controllers/MainController.js"></script>
+    <script src="js/controllers/TagController.js"></script>
+    <script src="js/controllers/SegmentController.js"></script>
+    <script src="js/controllers/TaggingController.js"></script>
+    <script src="js/controllers/LoginController.js"></script>
 </head>
-<body ng-controller="MainController">
+<body>
+
 <div class="navbar navbar-default navbar-fixed-top" role="navigation">
     <div class="container" ng-app>
         <div class="navbar-header">
@@ -19,33 +33,84 @@
                     <a class="btn dropdown-toggle" ng-click="open=!open">Push<b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li>
-                            <a href="#/push/tags">Tag Devices</a>
-                            <a href="#/push/segments</a>
-                            <a href="#">Push Notification</a>
+                            <a href="#/push/tags">Tags</a>
+                            <a href="#/push/segments">Segments</a>
+                            <a href="#/push/tagging">Tag Devices</a>
                         </li>
                     </ul>
                 </li>
                 <li>
-                    <a href="#/push/tags" >Test</a>
+                    <a href="#/push/tagging" >Test</a>
                 </li>
             </ul>
+            <ul class="nav navbar-nav navbar-right" ng-controller="LoginController">
+                <li ng-show="isLoggedIn() == false"> <a ng-click="secureCheck()">Login</a> </li>
+                <li ng-show="isLoggedIn()"> <a ng-click="logOut()">Logout {{ getUser() }}</a> </li>
+            </ul>
         </div>
+
     </div>
 </div>
+
+<!--div id="login-holder">
+    <div id="loginbox">
+        <div id="login-inner" ng-controller="MainController">
+            Note: there is no need to enter any credentials.<br>&nbsp;
+            <form ng-submit="submit()">
+                <table border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <th>Username</th>
+                        <td><input type="text" class="login-inp" ng-model="username"/></td>
+                    </tr>
+                    <tr>
+                        <th>Password</th>
+                        <td><input type="password" class="login-inp" ng-model="password"/></td>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <td><input type="submit" class="submit-login"/></td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+        <div class="clear"></div>
+    </div>
+</div-->
 
 <!-- Page content -->
 <div id="content" ng-view>
 </div>
 
-<script src="js/lib/angular/angular.js"></script>
-<script src="js/lib/angular/angular-route.js"></script>
-<script src="js/lib/ui-bootstrap-tpls-0.9.0.min.js"></script>
-<script src="js/app.js"></script>
-<script src="js/services.js"></script>
-<script src="js/controllers/MainController.js"></script>
-<script src="js/controllers/PushController.js"></script>
-<script src="js/filters.js"></script>
-<script src="js/directives.js"></script>
+<script type="text/ng-template" id="LoginModal.html">
+    <div class="modal-header">
+        <h4 class="modal-title" id="loginModalLabel">Enter credentials</h4>
+    </div>
+    <div class="modal-body">
+        <div class="form-horizontal">
+            <div class="form-group">
+                <label class="col-lg-4 control-label" for="userName">User name</label>
+
+                <div class="col-lg-4">
+                    <input type="text" class="form-control" ng-model="credentials.userName" id="userName"
+                           placeholder="User name">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-lg-4 control-label" for="password">Password</label>
+
+                <div class="col-lg-4">
+                    <input type="password" class="form-control" ng-model="credentials.password" id="password"
+                           placeholder="Password">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" ng-click="ok()">Log in</button>
+        <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+    </div>
+</script>
+
 
 </body>
 </html>

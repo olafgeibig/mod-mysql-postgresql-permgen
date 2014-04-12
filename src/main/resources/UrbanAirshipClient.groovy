@@ -1,4 +1,5 @@
 import groovy.json.JsonBuilder
+import io.netty.handler.codec.http.HttpHeaders
 
 def eventBus = vertx.eventBus
 def log = container.logger
@@ -91,3 +92,95 @@ eventBus.registerHandler("UrbanAirship.tag.delete") { message ->
     request.headers.set('Authorization', authString)
     request.end()
 }
+
+eventBus.registerHandler("UrbanAirship.segment.getAll") { message ->
+    def client = vertx.createHttpClient(port: 443, SSL: true, trustAll: true, host: "go.urbanairship.com")
+    def request = client.request("GET", "/api/segments/") { response ->
+        response.bodyHandler { body ->
+            def json = new JsonBuilder()
+            json {
+                statusCode response.statusCode
+                statusMessage response.statusMessage
+                content body.toString()
+            }
+            message.reply(json.toString())
+        }
+    }
+    request.headers.set(HttpHeaders.Names.AUTHORIZATION, authString)
+    request.end()
+}
+
+eventBus.registerHandler("UrbanAirship.segment.get") { message ->
+    def client = vertx.createHttpClient(port: 443, SSL: true, trustAll: true, host: "go.urbanairship.com")
+    def request = client.request("GET", "/api/segments/${message.body}") { response ->
+        response.bodyHandler { body ->
+            def json = new JsonBuilder()
+            json {
+                statusCode response.statusCode
+                statusMessage response.statusMessage
+                content body.toString()
+            }
+            message.reply(json.toString())
+        }
+    }
+    request.headers.set(HttpHeaders.Names.AUTHORIZATION, authString)
+    request.end()
+}
+
+eventBus.registerHandler("UrbanAirship.segment.create") { message ->
+    String c = message.body
+    log.info(c)
+    def client = vertx.createHttpClient(port: 443, SSL: true, trustAll: true, host: "go.urbanairship.com")
+    def request = client.request("POST", "/api/segments/") { response ->
+        response.bodyHandler { body ->
+            def json = new JsonBuilder()
+            json {
+                statusCode response.statusCode
+                statusMessage response.statusMessage
+                content body.toString()
+            }
+            message.reply(json.toString())
+        }
+    }
+    request.headers.set(HttpHeaders.Names.AUTHORIZATION, authString)
+    request.headers.set(HttpHeaders.Names.CONTENT_LENGTH, c.length() as String)
+    request.headers.set(HttpHeaders.Names.CONTENT_TYPE, "application/json")
+    request.write(c)
+    request.end()
+}
+
+eventBus.registerHandler("UrbanAirship.segment.delete") { message ->
+    def client = vertx.createHttpClient(port: 443, SSL: true, trustAll: true, host: "go.urbanairship.com")
+    def request = client.request("DELETE", "/api/segments/${message.body}") { response ->
+        response.bodyHandler { body ->
+            def json = new JsonBuilder()
+            json {
+                statusCode response.statusCode
+                statusMessage response.statusMessage
+            }
+            message.reply(json.toString())
+        }
+    }
+    request.headers.set('Authorization', authString)
+    request.end()
+}
+
+//eventBus.registerHandler("UrbanAirship.segment.create2") { message ->
+//    def client = vertx.createHttpClient(port: 8080, SSL: false, trustAll: true, host: "localhost")
+//    def request = client.request("POST", "/api/segments/?"+params) { response ->
+//        response.bodyHandler { body ->
+//            def json = new JsonBuilder()
+//            json {
+//                statusCode response.statusCode
+//                statusMessage response.statusMessage
+//                content body.toString()
+//            }
+//            message.reply(json.toString())
+//        }
+//    }
+//    request.headers.set(HttpHeaders.Names.AUTHORIZATION, authString)
+//    request.headers.set(HttpHeaders.Names.CONTENT_LENGTH, params.getBytes().length)
+//    request.headers.set(HttpHeaders.Names.CONTENT_TYPE, "application/x-www-form-urlencoded")
+//    request.end()
+//}
+

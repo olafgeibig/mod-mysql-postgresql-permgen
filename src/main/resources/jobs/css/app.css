@@ -7,16 +7,16 @@ body { padding-top: 50px; }
 table {
     border-collapse: separate;
     border-spacing: 0 5px;
-    overflow: auto;
 }
 
 thead th {
-    background-color: #006DCC;
+    background-color: #87cfff;
     color: white;
 }
 
 tbody td {
     background-color: #EEEEEE;
+    overflow-y: auto;
 }
 
 tr td:first-child,

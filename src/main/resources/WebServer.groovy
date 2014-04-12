@@ -1,4 +1,5 @@
 import groovy.json.JsonBuilder
+import org.vertx.groovy.core.buffer.Buffer
 import org.vertx.groovy.core.http.RouteMatcher
 import org.vertx.groovy.core.http.impl.DefaultHttpServer
 import org.vertx.groovy.platform.Verticle
@@ -8,8 +9,19 @@ RouteMatcher routeMatcher = new RouteMatcher()
 def eventBus = vertx.eventBus
 def log = container.logger
 
-routeMatcher.get('/jobs/tag') { request ->
-    eventBus.send('UrbanAirship.tag.getAll', '') { message ->
+// generic get all
+routeMatcher.get('/job/:entity/') { request ->
+    def auth = request.headers.Authorization
+
+    if(!auth) {
+        log.info(auth)
+        request.response.statusCode = 401
+        request.response.statusMessage = 'Unauthorized'
+        request.response.end('Unauthorized')
+    } else {
+        log.info(auth)
+        String entity = request.params['entity']
+    eventBus.send("UrbanAirship.${entity}.getAll", '') { message ->
         //log.info "${System.currentTimeMillis()} ${message.body}"
         def json = new JsonSlurper().parseText(message.body)
         request.response.putHeader('Content-Type', 'application/json; charset=utf-8')
@@ -28,10 +40,39 @@ routeMatcher.get('/jobs/tag') { request ->
             content body
         }
         request.response.end(responseJson.toString())
+    }}
+}
+
+// generic create
+routeMatcher.post('/job/:entity/') { request ->
+    String entity = request.params['entity']
+    def body = new Buffer(0)
+    request.bodyHandler { buffer ->
+        body.appendBuffer(buffer as Buffer)
+        eventBus.send('UrbanAirship.${entity}.create', body.toString()) { message ->
+            log.info "${System.currentTimeMillis()} ${message.body}"
+            def json = new JsonSlurper().parseText(message.body)
+            request.response.statusCode = json.statusCode
+            request.response.statusMessage = json.statusMessage
+            request.response.end(json.statusMessage)
+        }
     }
 }
 
-routeMatcher.put('/jobs/tag/:tag') { request ->
+// generic delete
+routeMatcher.delete('/job/:entity/:id') { request ->
+    String entity = request.params['entity']
+    eventBus.send("UrbanAirship.${entity}.delete", request.params.id) { message ->
+        //log.info "${System.currentTimeMillis()} ${message.body}"
+        def json = new JsonSlurper().parseText(message.body)
+        request.response.statusCode = json.statusCode
+        request.response.statusMessage = json.statusMessage
+        request.response.end(json.statusMessage)
+    }
+}
+
+// create tag
+routeMatcher.put('/job/tag/:tag') { request ->
     eventBus.send('UrbanAirship.tag.create', request.params.tag) { message ->
         //log.info "${System.currentTimeMillis()} ${message.body}"
         def json = new JsonSlurper().parseText(message.body)
@@ -41,13 +82,41 @@ routeMatcher.put('/jobs/tag/:tag') { request ->
     }
 }
 
-routeMatcher.delete('/jobs/tag/:tag') { request ->
-    eventBus.send('UrbanAirship.tag.delete', request.params.tag) { message ->
-        //log.info "${System.currentTimeMillis()} ${message.body}"
-        def json = new JsonSlurper().parseText(message.body)
-        request.response.statusCode = json.statusCode
-        request.response.statusMessage = json.statusMessage
-        request.response.end(json.statusMessage)
+routeMatcher.post('/job/query/exec') { request ->
+    def body = new Buffer(0)
+    request.bodyHandler { buffer ->
+        body.appendBuffer(buffer as Buffer)
+        eventBus.send('TaggingEngine.query.exec', body.toString()) { message ->
+            log.info "${System.currentTimeMillis()} ${message.body}"
+            def json = new JsonSlurper().parseText(message.body)
+            request.response.statusCode = json.statusCode
+            request.response.statusMessage = json.statusMessage
+            request.response.end(message.body.toString())
+        }
+    }
+}
+
+routeMatcher.get('/job/foo') { request ->
+    def auth = request.headers.Authorization
+
+    if(!auth) {
+        log.info(auth)
+        request.response.statusCode = 401
+        request.response.statusMessage = 'Unauthorized'
+        request.response.end('Unauthorized')
+    } else {
+        auth -= 'Basic '
+        def user = new String(javax.xml.bind.DatatypeConverter.parseBase64Binary(auth)).split(':')[0]
+        log.info("$auth ${user}")
+        if(user != 'foo') {
+            request.response.statusCode = 401
+            request.response.statusMessage = 'Unauthorized'
+            request.response.end('Unauthorized')
+        } else {
+            request.response.statusCode = 200
+            request.response.statusMessage = 'OK'
+            request.response.end('OK')
+        }
     }
 }
 

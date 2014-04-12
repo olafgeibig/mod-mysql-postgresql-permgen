@@ -1,14 +1,14 @@
 'use strict';
 
 /**
- * PushController
+ * TagController
  * @constructor
  */
-var PushController = function($scope, $http, $modal, $log) {
+var TagController = function($scope, $http, $modal, $log) {
 
     $scope.getAllTags = function() {
         $scope.resetError();
-        $http.get('/jobs/tag').
+        $http.get('/job/tag/').
             success(function(result) {
                 $scope.tags = result.content.tags;
             }).
@@ -19,7 +19,7 @@ var PushController = function($scope, $http, $modal, $log) {
 
     $scope.createTag = function(tag) {
         $scope.resetError();
-        $http.put('/jobs/tag/' + tag).
+        $http.put('/job/tag/' + tag).
             success(function(result){
                 $scope.getAllTags();
             }).
@@ -30,7 +30,7 @@ var PushController = function($scope, $http, $modal, $log) {
 
     $scope.deleteTag = function(tag) {
         $scope.resetError();
-        $http.delete('/jobs/tag/' + tag).
+        $http.delete('/job/tag/' + tag).
             success(function(result) {
                 $scope.getAllTags();
             }).
@@ -41,8 +41,8 @@ var PushController = function($scope, $http, $modal, $log) {
 
     $scope.open = function (tagToBeDeleted) {
         var modalInstance = $modal.open({
-            templateUrl: 'DeleteModal.html',
-            controller: ModalInstanceCtrl,
+            templateUrl: 'DeleteTagModal.html',
+            controller: TagModalCtrl,
             resolve: {
                 tag: function () {
                     return tagToBeDeleted;
@@ -51,10 +51,8 @@ var PushController = function($scope, $http, $modal, $log) {
         });
 
         modalInstance.result.then(function (tag) {
-            $log.info('Modal closed, delete tag ' + tag + ' here at: ' + new Date());
             $scope.deleteTag(tag)
         }, function () {
-            $log.info('Modal dismissed at: ' + new Date());
         });
     };
 
@@ -71,7 +69,7 @@ var PushController = function($scope, $http, $modal, $log) {
     $scope.getAllTags();
 };
 
-var ModalInstanceCtrl = function ($scope, $modalInstance, tag) {
+var TagModalCtrl = function ($scope, $modalInstance, tag) {
     $scope.tag = tag;
 
     $scope.ok = function () {
