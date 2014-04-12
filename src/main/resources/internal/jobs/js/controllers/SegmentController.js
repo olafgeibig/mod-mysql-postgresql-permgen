@@ -8,7 +8,7 @@ var SegmentController = function($scope, $http, $modal, $log) {
 
     $scope.getAllSegments = function() {
         $scope.resetError();
-        $http.get('/job/segment/').
+        $http.get('../job/segment/').
             success(function(result) {
                 $scope.segments = result.content.segments;
             }).
@@ -19,7 +19,7 @@ var SegmentController = function($scope, $http, $modal, $log) {
 
     $scope.createSegment = function(segment) {
         $scope.resetError();
-        $http.put('/job/segment/' + segment).
+        $http.put('../job/segment/' + segment).
             success(function(result){
                 $scope.getAllSegments();
             }).
@@ -30,7 +30,7 @@ var SegmentController = function($scope, $http, $modal, $log) {
 
     $scope.deleteSegment = function(segmentId) {
         $scope.resetError();
-        $http.delete('/job/segment/' + segmentId).
+        $http.delete('../job/segment/' + segmentId).
             success(function(result) {
                 $scope.getAllSegments();
             }).

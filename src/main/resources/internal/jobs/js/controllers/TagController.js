@@ -8,7 +8,7 @@ var TagController = function($scope, $http, $modal, $log) {
 
     $scope.getAllTags = function() {
         $scope.resetError();
-        $http.get('/job/tag/').
+        $http.get('../job/tag/').
             success(function(result) {
                 $scope.tags = result.content.tags;
             }).
@@ -19,7 +19,7 @@ var TagController = function($scope, $http, $modal, $log) {
 
     $scope.createTag = function(tag) {
         $scope.resetError();
-        $http.put('/job/tag/' + tag).
+        $http.put('../job/tag/' + tag).
             success(function(result){
                 $scope.getAllTags();
             }).
@@ -30,7 +30,7 @@ var TagController = function($scope, $http, $modal, $log) {
 
     $scope.deleteTag = function(tag) {
         $scope.resetError();
-        $http.delete('/job/tag/' + tag).
+        $http.delete('../job/tag/' + tag).
             success(function(result) {
                 $scope.getAllTags();
             }).

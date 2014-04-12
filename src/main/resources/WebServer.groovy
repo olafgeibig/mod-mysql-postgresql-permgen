@@ -10,7 +10,7 @@ def eventBus = vertx.eventBus
 def log = container.logger
 
 // generic get all
-routeMatcher.get('/job/:entity/') { request ->
+routeMatcher.get('/internal/job/:entity/') { request ->
     def auth = request.headers.Authorization
 
     if(!auth) {
@@ -44,7 +44,7 @@ routeMatcher.get('/job/:entity/') { request ->
 }
 
 // generic create
-routeMatcher.post('/job/:entity/') { request ->
+routeMatcher.post('/internal/job/:entity/') { request ->
     String entity = request.params['entity']
     def body = new Buffer(0)
     request.bodyHandler { buffer ->
@@ -60,7 +60,7 @@ routeMatcher.post('/job/:entity/') { request ->
 }
 
 // generic delete
-routeMatcher.delete('/job/:entity/:id') { request ->
+routeMatcher.delete('/internal/job/:entity/:id') { request ->
     String entity = request.params['entity']
     eventBus.send("UrbanAirship.${entity}.delete", request.params.id) { message ->
         //log.info "${System.currentTimeMillis()} ${message.body}"
@@ -72,7 +72,7 @@ routeMatcher.delete('/job/:entity/:id') { request ->
 }
 
 // create tag
-routeMatcher.put('/job/tag/:tag') { request ->
+routeMatcher.put('/internal/job/tag/:tag') { request ->
     eventBus.send('UrbanAirship.tag.create', request.params.tag) { message ->
         //log.info "${System.currentTimeMillis()} ${message.body}"
         def json = new JsonSlurper().parseText(message.body)
@@ -82,12 +82,13 @@ routeMatcher.put('/job/tag/:tag') { request ->
     }
 }
 
-routeMatcher.post('/job/query/exec') { request ->
+routeMatcher.post('/internal/job/query/exec') { request ->
     def body = new Buffer(0)
     request.bodyHandler { buffer ->
         body.appendBuffer(buffer as Buffer)
+        log.info(body.toString())
         eventBus.send('TaggingEngine.query.exec', body.toString()) { message ->
-            log.info "${System.currentTimeMillis()} ${message.body}"
+            //log.info "${System.currentTimeMillis()} ${message.body}"
             def json = new JsonSlurper().parseText(message.body)
             request.response.statusCode = json.statusCode
             request.response.statusMessage = json.statusMessage
@@ -96,7 +97,21 @@ routeMatcher.post('/job/query/exec') { request ->
     }
 }
 
-routeMatcher.get('/job/foo') { request ->
+routeMatcher.post('/internal/job/query/sample') { request ->
+    def body = new Buffer(0)
+    request.bodyHandler { buffer ->
+        body.appendBuffer(buffer as Buffer)
+        eventBus.send('TaggingEngine.query.exec', body.toString()) { message ->
+            //log.info "${System.currentTimeMillis()} ${message.body}"
+            def json = new JsonSlurper().parseText(message.body)
+            request.response.statusCode = json.statusCode
+            request.response.statusMessage = json.statusMessage
+            request.response.end(message.body.toString())
+        }
+    }
+}
+
+routeMatcher.get('/internal/job/foo') { request ->
     def auth = request.headers.Authorization
 
     if(!auth) {
@@ -121,7 +136,7 @@ routeMatcher.get('/job/foo') { request ->
 }
 
 // serve all files from directory jobs
-routeMatcher.getWithRegEx("^\\/jobs\\/.*") { req ->
+routeMatcher.getWithRegEx("^\\/internal/jobs\\/.*") { req ->
     req.response.sendFile(req.path.substring(1))
 }
 

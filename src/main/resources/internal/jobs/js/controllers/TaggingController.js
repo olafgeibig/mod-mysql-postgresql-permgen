@@ -6,9 +6,11 @@
  */
 var TaggingController = function($scope, $http, $modal, $log) {
 
+    $scope.query = { query: '', dryRun: true, tag: '' };
+
     $scope.getAllTags = function() {
         $scope.resetError();
-        $http.get('/job/tag/').
+        $http.get('../job/tag/').
             success(function(result) {
                 $scope.tags = result.content.tags;
             }).
@@ -19,7 +21,7 @@ var TaggingController = function($scope, $http, $modal, $log) {
 
     $scope.getAllSegments = function() {
         $scope.resetError();
-        $http.get('/job/segment/').
+        $http.get('../job/segment/').
             success(function(result) {
                 $scope.segments = result.content.segments;
             }).
@@ -28,9 +30,20 @@ var TaggingController = function($scope, $http, $modal, $log) {
             });
     };
 
-    $scope.runQuery = function(query) {
+    $scope.runTagging = function(query) {
         $scope.resetError();
-        $http.post('/job/query/exec', query).
+        $http.post('../job/query/exec', query).
+            success(function(result) {
+                $scope.queryResult = result;
+            }).
+            error(function(result) {
+                $scope.setError("Executing query failed: " + result);
+            });
+    };
+
+    $scope.runSampling = function(query) {
+        $scope.resetError();
+        $http.post('../job/query/sample', query).
             success(function(result) {
                 $scope.queryResult = result;
             }).
