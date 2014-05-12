@@ -13,7 +13,7 @@ var TagController = function($scope, $http, $modal, $log) {
                 $scope.tags = result.content.tags;
             }).
             error(function(result) {
-                $scope.setError("Loading tags failed: " + result.content);
+                $scope.setError("Loading tags failed: " + result.message);
             });
     };
 
@@ -24,7 +24,7 @@ var TagController = function($scope, $http, $modal, $log) {
                 $scope.getAllTags();
             }).
             error(function(result) {
-                $scope.setError("Creating tag failed: " + result);
+                $scope.setError("Creating tag failed: " + result.message);
             });
     };
 
@@ -35,7 +35,7 @@ var TagController = function($scope, $http, $modal, $log) {
                 $scope.getAllTags();
             }).
             error(function(result) {
-                $scope.setError("Deleting tag " + tag + " failed: " + result);
+                $scope.setError("Deleting tag " + tag + " failed: " + result.message);
             });
     };
 

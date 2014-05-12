@@ -18,6 +18,7 @@
     <script src="js/controllers/TagController.js"></script>
     <script src="js/controllers/SegmentController.js"></script>
     <script src="js/controllers/TaggingController.js"></script>
+    <script src="js/controllers/PushController.js"></script>
     <script src="js/controllers/LoginController.js"></script>
 </head>
 <body>
@@ -36,11 +37,9 @@
                             <a href="#/push/tags">Tags</a>
                             <a href="#/push/segments">Segments</a>
                             <a href="#/push/tagging">Tag Devices</a>
+                            <a href="#/push/push">Push Notification</a>
                         </li>
                     </ul>
-                </li>
-                <li>
-                    <a href="#/push/tagging" >Test</a>
                 </li>
             </ul>
             <ul class="nav navbar-nav navbar-right" ng-controller="LoginController">
@@ -51,31 +50,6 @@
 
     </div>
 </div>
-
-<!--div id="login-holder">
-    <div id="loginbox">
-        <div id="login-inner" ng-controller="MainController">
-            Note: there is no need to enter any credentials.<br>&nbsp;
-            <form ng-submit="submit()">
-                <table border="0" cellpadding="0" cellspacing="0">
-                    <tr>
-                        <th>Username</th>
-                        <td><input type="text" class="login-inp" ng-model="username"/></td>
-                    </tr>
-                    <tr>
-                        <th>Password</th>
-                        <td><input type="password" class="login-inp" ng-model="password"/></td>
-                    </tr>
-                    <tr>
-                        <th></th>
-                        <td><input type="submit" class="submit-login"/></td>
-                    </tr>
-                </table>
-            </form>
-        </div>
-        <div class="clear"></div>
-    </div>
-</div-->
 
 <!-- Page content -->
 <div id="content" ng-view>

@@ -1,4 +1,5 @@
 import groovy.json.JsonBuilder
+import groovy.json.JsonSlurper
 import io.netty.handler.codec.http.HttpHeaders
 
 def eventBus = vertx.eventBus
@@ -165,22 +166,42 @@ eventBus.registerHandler("UrbanAirship.segment.delete") { message ->
     request.end()
 }
 
-//eventBus.registerHandler("UrbanAirship.segment.create2") { message ->
-//    def client = vertx.createHttpClient(port: 8080, SSL: false, trustAll: true, host: "localhost")
-//    def request = client.request("POST", "/api/segments/?"+params) { response ->
-//        response.bodyHandler { body ->
-//            def json = new JsonBuilder()
-//            json {
-//                statusCode response.statusCode
-//                statusMessage response.statusMessage
-//                content body.toString()
-//            }
-//            message.reply(json.toString())
-//        }
-//    }
-//    request.headers.set(HttpHeaders.Names.AUTHORIZATION, authString)
-//    request.headers.set(HttpHeaders.Names.CONTENT_LENGTH, params.getBytes().length)
-//    request.headers.set(HttpHeaders.Names.CONTENT_TYPE, "application/x-www-form-urlencoded")
-//    request.end()
-//}
+eventBus.registerHandler("UrbanAirship.push") { message ->
+    String c = message.body
+    log.info(c)
+    def client = vertx.createHttpClient(port: 443, SSL: true, trustAll: true, host: "go.urbanairship.com")
+    def request = client.request("POST", "/api/push/validate") { response ->
+        response.bodyHandler { body ->
+            def responseJson = new JsonBuilder()
+            responseJson {
+                statusCode response.statusCode
+                statusMessage response.statusMessage
+                content body.toString()
+            }
+            message.reply(responseJson.toString())
+        }
+    }
+    // parsing the client data
+    def pushData = new JsonSlurper().parseText(c)
+    def audience
+    if(pushData.audienceType == "tag") {
+        audience = [ tag:[pushData.audienceName] ]
+    } else if(pushData.audienceType =="segment") {
+        audience = [segment:pushData.audienceName]
+    }
+    def data = [
+        audience:audience,
+        device_types:pushData.deviceType,
+        notification:[alert:pushData.alert]
+    ]
+    def json = new JsonBuilder(data)
+    def content = json.toString()
+    log.info(content)
+    request.headers.set(HttpHeaders.Names.AUTHORIZATION, authString)
+    request.headers.set(HttpHeaders.Names.CONTENT_LENGTH, content.length() as String)
+    request.headers.set(HttpHeaders.Names.CONTENT_TYPE, "application/json")
+    request.headers.set(HttpHeaders.Names.ACCEPT, "application/vnd.urbanairship+json; version=3;")
+    request.write(content)
+    request.end()
+}
 

@@ -111,6 +111,20 @@ routeMatcher.post('/internal/job/query/sample') { request ->
     }
 }
 
+routeMatcher.post('/internal/job/pushNotification') { request ->
+    def body = new Buffer(0)
+    request.bodyHandler { buffer ->
+        body.appendBuffer(buffer as Buffer)
+        eventBus.send('UrbanAirship.push', body.toString()) { message ->
+            log.info "${System.currentTimeMillis()} ${message.body}"
+            def responseJson = new JsonSlurper().parseText(message.body)
+            request.response.statusCode = responseJson.statusCode
+            request.response.statusMessage = responseJson.statusMessage
+            request.response.end(message.body.toString())
+        }
+    }
+}
+
 routeMatcher.get('/internal/job/foo') { request ->
     def auth = request.headers.Authorization
 

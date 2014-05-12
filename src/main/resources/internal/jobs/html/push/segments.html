@@ -38,9 +38,19 @@
         <div class="col-md-4 column">
             <p><strong>Create Segment</strong></p>
             <form name="form" class="css-form" novalidate>
-                New segment:
-                <input class="form-control" type="text" ng-model="segment.display_name" name="display_name" required /><br />
-                <button ng-click="createSegment(segment)" class="btn btn-default">Create</button>
+                <div class="form-group">
+                    <label>Name</label>
+                    <input class="form-control" type="text" ng-model="segment.display_name" name="display_name" required />
+                    <p ng-show="form.display_name.$invalid && !form.display_name.$pristine" class="help-block">Name is required.</p>
+                </div>
+                 <div class="form-group">
+                    <label>Tag</label>
+                    <select name="tag" class="form-control" ng-model="segment.tag" ng-options="t for t in tags" required>
+                        <option value="">Select tag</option>
+                    </select>
+                    <p ng-show="form.tag.$invalid && !form.tag.$pristine" class="help-block">Tag is required.</p>
+                </div>
+                <button type="submit" ng-disabled="form.$invalid" class="btn btn-default" ng-click="createSegment(segment)">Create</button>
             </form>
         </div>
     </div>

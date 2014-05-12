@@ -28,6 +28,11 @@ App.config(['$routeProvider', function ($routeProvider) {
         controller: TaggingController
     });
 
+    $routeProvider.when('/push/push', {
+        templateUrl: 'html/push/push.html',
+        controller: PushController
+    });
+
     $routeProvider.otherwise({redirectTo: '/'});
 }]);
 

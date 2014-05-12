@@ -13,18 +13,18 @@ var SegmentController = function($scope, $http, $modal, $log) {
                 $scope.segments = result.content.segments;
             }).
             error(function(result) {
-                $scope.setError("Loading segments failed: " + result.content);
+                $scope.setError("Loading segments failed: " + result.message);
             });
     };
 
     $scope.createSegment = function(segment) {
         $scope.resetError();
-        $http.put('../job/segment/' + segment).
+        $http.post('../job/segment/', segment).
             success(function(result){
                 $scope.getAllSegments();
             }).
             error(function(result) {
-                $scope.setError("Creating segment failed: " + result);
+                $scope.setError("Creating segment failed: " + result.message);
             });
     };
 
@@ -35,7 +35,18 @@ var SegmentController = function($scope, $http, $modal, $log) {
                 $scope.getAllSegments();
             }).
             error(function(result) {
-                $scope.setError("Deleting segment " + segmentId + " failed: " + result);
+                $scope.setError("Deleting segment " + segmentId + " failed: " + result.message);
+            });
+    };
+
+    $scope.getAllTags = function() {
+        $scope.resetError();
+        $http.get('../job/tag/').
+            success(function(result) {
+                $scope.tags = result.content.tags;
+            }).
+            error(function(result) {
+                $scope.setError("Loading tags failed: " + result.message);
             });
     };
 
@@ -69,6 +80,7 @@ var SegmentController = function($scope, $http, $modal, $log) {
     };
 
     $scope.getAllSegments();
+    $scope.getAllTags();
 };
 
 var ModalInstanceCtrl = function ($scope, $modalInstance, segment) {
