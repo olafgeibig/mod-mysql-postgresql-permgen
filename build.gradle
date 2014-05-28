@@ -55,6 +55,10 @@ dependencies {
   provided "org.codehaus.groovy:groovy-all:$groovyVersion"
   provided "io.vertx:lang-groovy:$groovyLangModVersion@jar"
 
+  provided "org.scala-lang:scala-library:$scalaVersion"
+  provided "org.scala-lang:scala-compiler:$scalaVersion"
+  provided "io.vertx:lang-scala:$scalaLangModVersion"
+
 }
 
 test {

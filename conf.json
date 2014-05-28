@@ -1,5 +1,20 @@
-// Example JSON config file
-
 {
-  "foo": "bar"
+    "mongo-persistor" : {
+        "address": "mongodb-persistor",
+        "host": "localhost",
+        "port": 27017,
+        "pool_size": 10,
+        "db_name": "tvs-jobs"
+    },
+
+    "mysql-postgresql" : {
+        "address" : "postgresql",
+        "connection" : "PostgreSQL",
+        "host" : "127.0.0.1",
+        "port" : 5432,
+        "maxPoolSize" : 10,
+        "username" : "tvs",
+        "password" : "test",
+        "database" : "tvs"
+    }
 }
